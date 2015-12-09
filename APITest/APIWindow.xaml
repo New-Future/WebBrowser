@@ -1,0 +1,51 @@
+﻿<Window x:Name="APITestWindow" x:Class="APITest.APIWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:APITest"
+        mc:Ignorable="d"
+        Title="API Test" Height="750" Width="1200" WindowStyle="ThreeDBorderWindow" MinHeight="750" MaxHeight="780">
+    <Grid IsManipulationEnabled="True" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20"></RowDefinition>
+            <RowDefinition Height="240"></RowDefinition>
+            <RowDefinition Height="450"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"></ColumnDefinition>
+            <ColumnDefinition Width="4*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <WrapPanel x:Name="urlPanel" Grid.Row="0" Grid.ColumnSpan="2">
+            <WrapPanel x:Name="methodPanel" Height="18" Width="344" Margin="10,1,0,1">
+                <RadioButton x:Name="radioButtonGet" GroupName="Method"  Content="GET" Checked="radioButton_Change"/>
+                <RadioButton x:Name="radioButtonPost" GroupName="Method" Content="POST" Checked="radioButton_Change"/>
+                <RadioButton x:Name="radioButtonPut" GroupName="Method" Content="PUT" Checked="radioButton_Change"/>
+                <RadioButton x:Name="radioButtonDelete" GroupName="Method" Content="DELETE" Checked="radioButton_Change"/>
+                <RadioButton x:Name="radioButtonHead" GroupName="Method" Content="HEAD" Checked="radioButton_Change"/>
+                <RadioButton x:Name="radioButtonOption" GroupName="Method" Content="OPTIONS" Checked="radioButton_Change"/>
+            </WrapPanel>
+            <TextBox x:Name="URLBox" TextWrapping="Wrap" Text="http://api.yunyin.org/test/" Width="450" Height="18" ToolTip="输入URL地址" KeyDown="URLBox_KeyDown"/>
+            <Button x:Name="SendBtn" Content="发送" Width="52" Click="SendBtn_Click" BorderThickness="1" Cursor="Hand"/>
+        </WrapPanel>
+        <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,0,4">
+            <Label  Content="自定义头(一行一组)"/>
+            <TextBox x:Name="addHead" TextWrapping="Wrap" Text="User-Agent: APITest&#xD;&#xA;Token: 1234567890&#xD;&#xA;Origin: http://test.yunyin.org" VerticalAlignment="Top" AcceptsReturn="True" Height="80" VerticalScrollBarVisibility="Auto"/>
+            <Label  Content="字段和参数(一行一组)"/>
+            <TextBox x:Name="addField" Height="110" TextWrapping="Wrap" Text="name=REST API测试客户端&#xD;&#xA;author=New Future&#xA;version=1.0" VerticalAlignment="Top"  AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
+        </StackPanel>
+        <StackPanel Grid.Row="2" Grid.Column="0" CanVerticallyScroll="True" Margin="0,0,0,4" Background="#FFAEB0AB">
+            <Label x:Name="sendlabel" Content="发送的数据" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="#FF0AFF15"/>
+            <TextBox x:Name="SendText" TextWrapping="Wrap"  IsReadOnly="True" Height="420" BorderBrush="#FF0AFF15" HorizontalScrollBarVisibility="Auto" Grid.IsSharedSizeScope="True" ScrollViewer.CanContentScroll="True" VerticalScrollBarVisibility="Auto" Margin="0,0,0,2" Background="{x:Null}"/>
+        </StackPanel>
+        <StackPanel     Grid.Row="1" Grid.Column="1" CanVerticallyScroll="True" Background="#FFFFFCBE">
+            <Label x:Name="headlabel" Content="收到数据头" HorizontalAlignment="Left" VerticalAlignment="Top" Background="{x:Null}" Foreground="#FFFA8364"/>
+            <TextBox x:Name="HeadText" TextWrapping="Wrap" IsReadOnly="True" BorderBrush="#FFF50A0A" Foreground="#FF0070F7" Height="215" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Auto" FontWeight="Bold" ScrollViewer.CanContentScroll="True" Background="{x:Null}"/>
+        </StackPanel>
+        <StackPanel     Grid.Row="2" Grid.Column="1" CanVerticallyScroll="True" CanHorizontallyScroll="True" Grid.IsSharedSizeScope="True" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" Margin="0,0,0,-6" Background="#FFFFFCBE">
+            <Label x:Name="bodylabel" Content="收到数据内容" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="#FFFA8364"/>
+            <TextBox x:Name="BodyText" TextWrapping="Wrap" IsReadOnly="True" BorderBrush="#FFF50A0A" Foreground="#FF0070F7" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" FontWeight="Bold" Grid.IsSharedSizeScope="True" ScrollViewer.CanContentScroll="True" Height="420" Margin="0,0,0,2" Background="{x:Null}"/>
+        </StackPanel>
+
+    </Grid>
+</Window>
