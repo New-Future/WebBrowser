@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:APITest"
         mc:Ignorable="d"
-        Title="API Test" Height="750" Width="1200" WindowStyle="ThreeDBorderWindow" MinHeight="750" MaxHeight="780">
+        Title="API Test" Height="750" Width="1200" WindowStyle="ThreeDBorderWindow" MinHeight="750" MaxHeight="780" Icon="favicon.ico">
     <Grid IsManipulationEnabled="True" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto">
         <Grid.RowDefinitions>
             <RowDefinition Height="20"></RowDefinition>
