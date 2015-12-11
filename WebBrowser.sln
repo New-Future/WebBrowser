@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebBrowser", "WebBrowser\We
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "APITest", "APITest\APITest.csproj", "{BF56DB2F-820B-4DBC-8E30-375006AF3BE6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HTTP", "HTTP\HTTP.csproj", "{CCCFDA02-6E6C-4F31-B592-C4434860C862}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{BF56DB2F-820B-4DBC-8E30-375006AF3BE6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BF56DB2F-820B-4DBC-8E30-375006AF3BE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BF56DB2F-820B-4DBC-8E30-375006AF3BE6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CCCFDA02-6E6C-4F31-B592-C4434860C862}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCCFDA02-6E6C-4F31-B592-C4434860C862}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CCCFDA02-6E6C-4F31-B592-C4434860C862}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CCCFDA02-6E6C-4F31-B592-C4434860C862}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

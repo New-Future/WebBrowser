@@ -1,8 +1,20 @@
-﻿using System;
+﻿/**
+Response 
+HTPP响应处理类
+支持stream流和string数据创建
+*属性
+ Dictionary Header响应头字典(键转大写)
+ string Body数据
+ string Headers响应头字符串
+ byte[] Data 响应数据字节流
+*/
+
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace WebBrowser
 {
@@ -45,6 +57,7 @@ namespace WebBrowser
         /// <summary>
         /// 响应数据
         /// </summary>
+        public byte[] Data { get; private set; }
         string responserText;
         public string Body
         {
@@ -58,12 +71,12 @@ namespace WebBrowser
         /// <param name="result">响应数据字符</param>
         public Response(string result)
         {
-            int headerIndex = result.IndexOf(HTTP.END_P);
+            int headerIndex = result.IndexOf(HTTP.END);
             if (headerIndex > 0)
             {
                 Headers = result.Substring(0, headerIndex);
                 this.ParseHeader(Headers);
-                this.ParseBody(result.Substring(headerIndex + HTTP.END_P.Length));
+                this.ParseBody(result.Substring(headerIndex + HTTP.END.Length));
             }
             else
             {
@@ -71,9 +84,28 @@ namespace WebBrowser
             }
         }
 
-        /// 构建响应数据
-        public Response()
+        /// <summary>
+        /// 通过字节流创建
+        /// </summary>
+        /// <param name="responseStream"></param>
+        public Response(Stream responseStream)
         {
+
+            //解析头
+            Headers = ReadHead(responseStream);
+            if (this.ParseHeader(Headers))
+            {
+                ReadBody(responseStream);
+                //判断文件格式
+                string charset = GetCharset() ?? "UTF-8";
+                Encoding encode = Encoding.GetEncoding(charset);
+                this.Body = encode.GetString(Data);
+            }
+            else
+            {
+                this.Body = Headers;
+            }
+            responseStream.Close();
         }
 
 
@@ -94,9 +126,95 @@ namespace WebBrowser
             }
             return null;
         }
+
+        /// <summary>
+        /// 从字节流中读取响应头
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <returns></returns>
+        public static string ReadHead(Stream stream)
+        {
+            StringBuilder header = new StringBuilder(128);
+            int currentByte = -1;
+            /*读取header*/
+            try
+            {
+                while (stream.CanRead)
+                {
+                    currentByte = stream.ReadByte();
+                    if (currentByte == -1)
+                    {
+                        break;//读到数据流末尾
+                    }
+                    else
+                    {
+                        header.Append((char)currentByte);
+                        if (header.ToString().EndsWith(HTTP.END))
+                        {
+                            break;//读取到结束符
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.Write(e.Message);
+            }
+
+            string Headers = header.ToString();
+            if (Headers.StartsWith("HTTP/1.1 100"))
+            {
+                //HTTP 100 continue响应继续
+                return ReadHead(stream);
+            }
+            else
+            {
+                return Headers.Trim();
+            }
+        }
+
+        /// <summary>
+        /// 读取响应正文数据
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <returns></returns>
+        private bool ReadBody(Stream stream)
+        {
+            int len = 0;
+            if (Header.ContainsKey("CONTENT-LENGTH") && int.TryParse(Header["CONTENT-LENGTH"], out len))
+            {
+                //指定了长度
+                this.Data = ReadStream(stream, len);
+            }
+            else if (Header.ContainsKey("TRANSFER-ENCODING") && Header["TRANSFER-ENCODING"].ToUpper() == "CHUNKED")
+            {
+                //分段下载
+                int chucked = GetChunked(stream);
+                while (chucked > 0)
+                {
+                    Data = Data == null ? ReadStream(stream, chucked) : Data.Concat(ReadStream(stream, chucked)).ToArray();
+                    chucked = GetChunked(stream);
+                }
+            }
+            else
+            {
+                //未指定
+                int bufflen = 102400;
+
+                byte[] buff;// = new byte[bufflen];
+                do
+                {
+                    buff = ReadStream(stream, bufflen);
+                    Data = Data == null ? buff : Data.Concat(buff).ToArray();
+                } while (buff.Length < bufflen);
+            }
+
+
+            return true;
+        }
         /// <summary>
         /// 解析头部
-        /// </summary>
+        /// </summary> 
         /// <param name="headerString">header字符串</param>
         /// <returns>是否解析成功</returns>
         private bool ParseHeader(string headerString = null)
@@ -124,8 +242,8 @@ namespace WebBrowser
                 var index = allHeaders[i].IndexOf(HTTP.KEY_SEPARATOR);
                 if (index > 0)
                 {
-                    var key = allHeaders[i].Substring(0, index);
-                    var value = allHeaders[i].Substring(index + HTTP.KEY_SEPARATOR.Length);
+                    var key = allHeaders[i].Substring(0, index).Trim().ToUpper();
+                    var value = allHeaders[i].Substring(index + HTTP.KEY_SEPARATOR.Length).TrimStart();
                     if (this.Header.ContainsKey(key))
                     {
                         //重复键值覆盖
@@ -192,6 +310,70 @@ namespace WebBrowser
             string charset = GetCharset() ?? "UTF-8";
             Encoding encode = Encoding.GetEncoding(charset);
             return encode.GetString(s.ToString().ToCharArray().Select(b => (byte)b).ToArray());
+        }
+
+        /// <summary>
+        /// 读取chunked值
+        /// </summary>
+        /// <param name="sm"></param>
+        /// <returns></returns>
+        static int GetChunked(Stream sm)
+        {
+            int chunked = 0;
+            StringBuilder bulider = new StringBuilder();
+            int read = 0;
+            //去掉前面的换行
+            do
+            {
+                read = sm.ReadByte();
+            } while (HTTP.CRLF.Contains((char)read));
+            //读取主体内容
+            while (read > 0)
+            {
+                try
+                {
+                    var temp = bulider.Append((char)read).ToString();
+                    if (read == '\n' && temp.EndsWith(HTTP.CRLF))
+                    {
+                        int index = temp.IndexOf(';');
+                        if (index > 0)
+                        {
+                            temp = temp.Substring(0, index);
+                        }
+                        chunked = Convert.ToInt32(temp.Trim(), 16);
+                        break;
+                    }
+                    read = sm.ReadByte();
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine(ex.Message);
+                    break;
+                }
+            }
+            return chunked;
+        }
+
+        /// <summary>
+        /// 读取数据流中指定长度
+        /// </summary>
+        /// <param name="s">数据流</param>
+        /// <param name="len">长度</param>
+        /// <returns></returns>
+        public static byte[] ReadStream(Stream s, int len)
+        {
+            byte[] buff = new byte[len];
+            var l = s.Read(buff, 0, len);
+            while (l > 0 && l < len)
+            {
+                var t = s.Read(buff, l, len - l);
+                if (t < 0)
+                {
+                    break;
+                }
+                l += t;
+            }
+            return buff.Take(l).ToArray();
         }
     }
 }

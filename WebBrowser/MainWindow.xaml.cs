@@ -24,11 +24,14 @@ namespace WebBrowser
         {
             InitializeComponent();
             HTTP h = new HTTP();
-            string url= "http://cc.nankai.edu.cn/";
-            var response = h.Request(url, "GET");
-            var t=response.Body;
-            this.Body_textBlock.Text = t;
+            string url= "https://www.nankai.edu.cn/";
+            //var response = h.Request(url, "GET");
+            //var t=response.Body;
+            //this.Body_textBlock.Text = t;
             //this.richTextBox.AppendText (t);
+            Uri u = new Uri(url);
+            Console.WriteLine(u.Host);
+            Console.WriteLine(u.Port);
 
         }
 

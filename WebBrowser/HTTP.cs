@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 using System.Net;
 using System.IO;
 using System.Net.Sockets;
+using System.Diagnostics;
+using System.Net.Security;
+using System.Security.Authentication;
+using System.Security.Cryptography.X509Certificates;
 
 namespace WebBrowser
 {
@@ -17,7 +21,7 @@ namespace WebBrowser
     {
         #region 分隔符等常量
         public const string CRLF = "\r\n";//换行符
-        public const string END_P = "\r\n\r\n";//段落换行
+        public const string END = "\r\n\r\n";//段落换行
         public const string KEY_SEPARATOR = ": ";// 响应头字段分隔符
         private string vesion = "1.1";
         #endregion
@@ -101,28 +105,48 @@ namespace WebBrowser
                 string requestHeader = BuildHeader(URI.PathAndQuery);//构建请求数据
                 SendData = requestHeader + _postdata;
                 byte[] request = Encoding.UTF8.GetBytes(SendData);
-                clientSocket.Client.Send(request);//发送请求数据
 
-                /*接收数据*/
-                byte[] responseByte = new byte[1024000];
-                int len = clientSocket.Client.Receive(responseByte);
-                string result = "";
-                do
+
+                //clientSocket.Connect(u.Host, u.Port);
+                Stream stream;
+                if (clientSocket.Connected)
                 {
-                    //分段传输全部下载
-                    result += new String(responseByte.Take(len).Select((x) => (char)x).ToArray());
-                    len = clientSocket.Client.Receive(responseByte);
-                } while (len > 0);
+                    if (URI.Scheme.ToLower() == "https")
+                    {
+                        //HTTPS
+                        X509CertificateCollection x509certs = new X509CertificateCollection();
+                        SslStream ssl = new SslStream(clientSocket.GetStream(), false, new RemoteCertificateValidationCallback(ValidateServerCertificate), null);
 
-                /*关闭连接*/
-                clientSocket.Close();
-                return new Response(result);
+                        ssl.AuthenticateAsClient("SslServerName", x509certs, SslProtocols.Tls, false);
+                        if (ssl.IsAuthenticated)
+                        {
+                            ssl.Write(request);
+                            ssl.Flush();
+                            stream = ssl;
+
+                        }
+                        else
+                        {
+                            return null;
+                        }
+                    }
+                    else
+                    {
+                        //HTTP
+                        clientSocket.Client.Send(request);//发送请求数据
+                        stream = clientSocket.GetStream();
+                    }
+                    return new Response(stream);
+                }
+
+                return null;
+
+
+
             }
             catch (Exception e)
             {
-#if DEBUG
-                Console.WriteLine(e.Message);
-#endif
+                Debug.WriteLine(e.Message);
                 LastError = e.Message;
                 return null;
             }
@@ -182,7 +206,10 @@ namespace WebBrowser
             return r;
         }
 
-
+        public string GetFile(string url)
+        {
+            return "";
+        }
         /// <summary>
         /// 添加和设置Header内容
         /// </summary>
@@ -245,7 +272,7 @@ namespace WebBrowser
                 //头数据
                 headersBuilder.Append(item.Key + HTTP.KEY_SEPARATOR + item.Value + HTTP.CRLF);
             }
-            headersBuilder.Append("Connection: close" + HTTP.END_P);
+            headersBuilder.Append("Connection: close" + HTTP.END);
             return headersBuilder.ToString();
         }
 
@@ -258,8 +285,21 @@ namespace WebBrowser
             {
                 sb.Append(@"%" + Convert.ToString(byStr[i], 16));
             }
-
             return (sb.ToString());
+        }
+
+        /// <summary>
+        /// 验证证书
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="certificate"></param>
+        /// <param name="chain"></param>
+        /// <param name="sslPolicyErrors"></param>
+        /// <returns></returns>
+        static bool ValidateServerCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
+        {
+            //验证证书
+            return true;
         }
     }
 }

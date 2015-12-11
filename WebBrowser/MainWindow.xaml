@@ -5,12 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WebBrowser"
         mc:Ignorable="d"
-        Title="NKWebBrowser" Height="350" Width="525" WindowStyle="None">
+        Title="NKWebBrowser" Height="350" Width="525" WindowStyle="ThreeDBorderWindow">
     <Grid>
 
         <TextBox x:Name="URL_textBox" HorizontalAlignment="Left" Height="23" Margin="10,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="360"/>
         <Button x:Name="GO_button" Content="GO" HorizontalAlignment="Left" Margin="388,10,0,0" VerticalAlignment="Top" Width="78" Height="23" Click="GO_button_Click"/>
-        <TextBox x:Name="Head_textBlock" HorizontalAlignment="Left" Margin="0,39,0,0" TextWrapping="Wrap" Text="head" Width="517" Height="50" VerticalAlignment="Top"/>
-        <TextBox x:Name="Body_textBlock" HorizontalAlignment="Left" Margin="0,89,0,0" TextWrapping="Wrap" Text="body" Width="517" Height="230" VerticalAlignment="Top"/>
+        <TextBox x:Name="Head_textBlock" HorizontalAlignment="Left" Margin="0,39,0,0" TextWrapping="Wrap" Text="head" Width="517" Height="195" VerticalAlignment="Top" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"/>
+        <TextBox x:Name="Body_textBlock" HorizontalAlignment="Left" Margin="0,239,0,0" TextWrapping="Wrap" Text="body" Width="517" Height="80" VerticalAlignment="Top" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"/>
     </Grid>
 </Window>
