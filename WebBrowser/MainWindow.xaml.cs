@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,19 +22,12 @@ namespace WebBrowser
     /// </summary>
     public partial class MainWindow : Window
     {
+        string FilePath;
         public MainWindow()
         {
             InitializeComponent();
-            HTTP h = new HTTP();
-            string url= "https://www.nankai.edu.cn/";
-            //var response = h.Request(url, "GET");
-            //var t=response.Body;
-            //this.Body_textBlock.Text = t;
-            //this.richTextBox.AppendText (t);
-            Uri u = new Uri(url);
-            Console.WriteLine(u.Host);
-            Console.WriteLine(u.Port);
-
+            FilePath= Directory.CreateDirectory("download").FullName+"/";
+            Download();
         }
 
         private void GO_button_Click(object sender, RoutedEventArgs e)
@@ -45,7 +40,13 @@ namespace WebBrowser
             this.Body_textBlock.Text = response.Body;
             this.Head_textBlock.Text = response.Headers;
             }
+        }
 
+        void Download(string url= "https://ss0.bdstatic.com/5aV1bjqh_Q23odCf/static/superman/img/logo/logo_white.png")
+        {
+            string file = FilePath + url.Replace(':','_').Replace("/", "-");
+            HTTP h = new HTTP();
+            h.Download(url, file);
         }
     }
 }

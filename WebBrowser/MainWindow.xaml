@@ -12,5 +12,6 @@
         <Button x:Name="GO_button" Content="GO" HorizontalAlignment="Left" Margin="388,10,0,0" VerticalAlignment="Top" Width="78" Height="23" Click="GO_button_Click"/>
         <TextBox x:Name="Head_textBlock" HorizontalAlignment="Left" Margin="0,39,0,0" TextWrapping="Wrap" Text="head" Width="517" Height="195" VerticalAlignment="Top" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"/>
         <TextBox x:Name="Body_textBlock" HorizontalAlignment="Left" Margin="0,239,0,0" TextWrapping="Wrap" Text="body" Width="517" Height="80" VerticalAlignment="Top" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"/>
+        <Image x:Name="image" HorizontalAlignment="Left" Height="100" Margin="253,73,0,0" VerticalAlignment="Top" Width="100"/>
     </Grid>
 </Window>

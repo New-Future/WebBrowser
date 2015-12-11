@@ -123,7 +123,6 @@ namespace WebBrowser
                             ssl.Write(request);
                             ssl.Flush();
                             stream = ssl;
-
                         }
                         else
                         {
@@ -138,18 +137,13 @@ namespace WebBrowser
                     }
                     return new Response(stream);
                 }
-
-                return null;
-
-
-
             }
             catch (Exception e)
             {
                 Debug.WriteLine(e.Message);
                 LastError = e.Message;
-                return null;
             }
+            return null;
         }
 
 
@@ -206,9 +200,16 @@ namespace WebBrowser
             return r;
         }
 
-        public string GetFile(string url)
+        /// <summary>
+        /// 下载文件
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public bool Download(string url, string path)
         {
-            return "";
+            var r = GET(url);
+            return r != null && r.Save(path);
         }
         /// <summary>
         /// 添加和设置Header内容
@@ -276,17 +277,6 @@ namespace WebBrowser
             return headersBuilder.ToString();
         }
 
-        //URL编码
-        public static string UrlEncode(string str)
-        {
-            StringBuilder sb = new StringBuilder();
-            byte[] byStr = Encoding.UTF8.GetBytes(str);
-            for (int i = 0; i < byStr.Length; i++)
-            {
-                sb.Append(@"%" + Convert.ToString(byStr[i], 16));
-            }
-            return (sb.ToString());
-        }
 
         /// <summary>
         /// 验证证书

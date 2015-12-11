@@ -127,12 +127,36 @@ namespace WebBrowser
             return null;
         }
 
+        public bool Save(string path)
+        {
+            try
+            {
+                FileStream fs = new FileStream(path, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
+                if (Data != null)
+                {
+                    fs.Write(Data, 0, Data.Length);
+                }
+                else
+                {
+                    string charset = GetCharset() ?? "UTF-8";
+                    var bytes = Encoding.GetEncoding(charset).GetBytes(Body);
+                    fs.Write(bytes, 0, bytes.Length);
+                }
+                fs.Close();
+                return true;
+            }catch(Exception e)
+            {
+                Debug.WriteLine(e);
+                return false;
+            }
+        }
+
         /// <summary>
         /// 从字节流中读取响应头
         /// </summary>
         /// <param name="stream"></param>
         /// <returns></returns>
-        public static string ReadHead(Stream stream)
+        private static string ReadHead(Stream stream)
         {
             StringBuilder header = new StringBuilder(128);
             int currentByte = -1;
