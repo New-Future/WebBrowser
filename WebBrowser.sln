@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebBrowser", "WebBrowser\We
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "APITest", "APITest\APITest.csproj", "{BF56DB2F-820B-4DBC-8E30-375006AF3BE6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HtmltoXaml", "HtmltoXaml\HtmltoXaml.csproj", "{D2BA9E33-D32F-4471-B675-FF87A2EBEA77}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HTTP", "HTTP\HTTP.csproj", "{2DD5F0C1-C72C-4C68-B971-52D693E98475}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{BF56DB2F-820B-4DBC-8E30-375006AF3BE6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BF56DB2F-820B-4DBC-8E30-375006AF3BE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BF56DB2F-820B-4DBC-8E30-375006AF3BE6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D2BA9E33-D32F-4471-B675-FF87A2EBEA77}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2BA9E33-D32F-4471-B675-FF87A2EBEA77}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2BA9E33-D32F-4471-B675-FF87A2EBEA77}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2BA9E33-D32F-4471-B675-FF87A2EBEA77}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2DD5F0C1-C72C-4C68-B971-52D693E98475}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2DD5F0C1-C72C-4C68-B971-52D693E98475}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2DD5F0C1-C72C-4C68-B971-52D693E98475}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2DD5F0C1-C72C-4C68-B971-52D693E98475}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -16,7 +16,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace WebBrowser
+namespace Http
 {
     /// <summary>
     /// 响应数据
