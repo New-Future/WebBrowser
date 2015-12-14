@@ -230,7 +230,7 @@ namespace Http
                 {
                     buff = ReadStream(stream, bufflen);
                     Data = Data == null ? buff : Data.Concat(buff).ToArray();
-                } while (buff.Length < bufflen);
+                } while (buff.Length>0&&buff.Length < bufflen);
             }
 
 

@@ -8,8 +8,8 @@
         Title="API Test" Height="750" Width="1200" WindowStyle="ThreeDBorderWindow" MinHeight="750" MaxHeight="780" Icon="favicon.ico">
     <Grid IsManipulationEnabled="True" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto">
         <Grid.RowDefinitions>
-            <RowDefinition Height="20"></RowDefinition>
-            <RowDefinition Height="240"></RowDefinition>
+            <RowDefinition Height="25"></RowDefinition>
+            <RowDefinition Height="235"></RowDefinition>
             <RowDefinition Height="450"></RowDefinition>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -25,14 +25,14 @@
                 <RadioButton x:Name="radioButtonHead" GroupName="Method" Content="HEAD" Checked="radioButton_Change"/>
                 <RadioButton x:Name="radioButtonOption" GroupName="Method" Content="OPTIONS" Checked="radioButton_Change"/>
             </WrapPanel>
-            <TextBox x:Name="URLBox" Text="http://api.yunyin.org/test/" Width="450" Height="18" ToolTip="输入URL地址" KeyDown="URLBox_KeyDown"/>
+            <TextBox x:Name="URLBox" Text="http://api.yunyin.org/test/" Width="450" Height="24" ToolTip="输入URL地址" KeyDown="URLBox_KeyDown" VerticalAlignment="Center"/>
             <Button x:Name="SendBtn" Content="发送" Width="52" Click="SendBtn_Click" BorderThickness="1" Cursor="Hand"/>
         </WrapPanel>
         <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,0,4">
             <Label  Content="自定义头(一行一组)"/>
             <TextBox x:Name="addHead" Text="User-Agent: APITest&#xD;&#xA;Token: 1234567890&#xD;&#xA;Origin: http://test.yunyin.org" VerticalAlignment="Top" AcceptsReturn="True" Height="80" VerticalScrollBarVisibility="Auto"/>
             <Label  Content="字段和参数(一行一组)"/>
-            <TextBox x:Name="addField" Height="110" Text="name=REST API测试客户端&#xD;&#xA;author=New Future&#xA;version=1.0" VerticalAlignment="Top"  AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
+            <TextBox x:Name="addField" Height="100" Text="name=REST API测试客户端&#xD;&#xA;author=New Future&#xA;version=1.0" VerticalAlignment="Top"  AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
         </StackPanel>
         <StackPanel Grid.Row="2" Grid.Column="0" CanVerticallyScroll="True" Margin="0,0,0,4" Background="#FFAEB0AB">
             <Label x:Name="sendlabel" Content="发送的数据" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="#FF0AFF15"/>
@@ -40,7 +40,7 @@
         </StackPanel>
         <StackPanel     Grid.Row="1" Grid.Column="1" CanVerticallyScroll="True" Background="#FFFFFCBE">
             <Label x:Name="headlabel" Content="收到数据头" HorizontalAlignment="Left" VerticalAlignment="Top" Background="{x:Null}" Foreground="#FFFA8364"/>
-            <TextBox x:Name="HeadText" IsReadOnly="True" BorderBrush="#FFF50A0A" Foreground="#FF0070F7" Height="215" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" FontWeight="Bold" ScrollViewer.CanContentScroll="True" Background="{x:Null}" TextWrapping="WrapWithOverflow"/>
+            <TextBox x:Name="HeadText" IsReadOnly="True" BorderBrush="#FFF50A0A" Foreground="#FF0070F7" Height="210" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" FontWeight="Bold" ScrollViewer.CanContentScroll="True" Background="{x:Null}" TextWrapping="WrapWithOverflow"/>
         </StackPanel>
         <StackPanel     Grid.Row="2" Grid.Column="1" CanVerticallyScroll="True" CanHorizontallyScroll="True" Grid.IsSharedSizeScope="True" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" Margin="0,0,0,-6" Background="#FFFFFCBE">
             <Label x:Name="bodylabel" Content="收到数据内容" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="#FFFA8364"/>

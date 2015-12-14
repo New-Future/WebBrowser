@@ -91,27 +91,42 @@ namespace Http
         /// </summary>
         /// <param name="_url"></param>
         /// <param name="_type"></param>
-        /// <param name="_postdata"></param>
-        /// <param name="_cookie"></param>
         /// <returns></returns>
-        public Response Request(string _url, string _postdata = "")
+        public Response Request(string _url, string body = "")
+        {
+            Uri uri;
+            try
+            {
+                uri = new Uri(_url);
+            }
+            catch (Exception e)
+            {
+                LastError = e.Message;
+                return null;
+            }
+            return Request(uri, body);
+        }
+
+        /// <summary>
+        /// 发送请求
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <param name="body"></param>
+        /// <returns></returns>
+        public Response Request(Uri uri, string body = "")
         {
             try
             {
-                Uri URI = new Uri(_url);
-                AddHeader("Host", URI.Host);//设定主机
-                clientSocket.Connect(URI.Host, URI.Port);//连接主机
+                AddHeader("Host", uri.Host);//设定主机
+                clientSocket.Connect(uri.Host, uri.Port);//连接主机
 
-                string requestHeader = BuildHeader(URI.PathAndQuery);//构建请求数据
-                SendData = requestHeader + _postdata;
+                string requestHeader = BuildHeader(uri.PathAndQuery);//构建请求数据
+                SendData = requestHeader + body;
                 byte[] request = Encoding.UTF8.GetBytes(SendData);
-
-
-                //clientSocket.Connect(u.Host, u.Port);
                 Stream stream;
                 if (clientSocket.Connected)
                 {
-                    if (URI.Scheme.ToLower() == "https")
+                    if (uri.Scheme.ToLower() == "https")
                     {
                         //HTTPS
                         X509CertificateCollection x509certs = new X509CertificateCollection();
@@ -135,7 +150,9 @@ namespace Http
                         clientSocket.Client.Send(request);//发送请求数据
                         stream = clientSocket.GetStream();
                     }
-                    return new Response(stream);
+                    var response = new Response(stream);
+                    clientSocket.Close();
+                    return response;
                 }
             }
             catch (Exception e)
