@@ -4,9 +4,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:APITest"
+        xmlns:gif="http://wpfanimatedgif.codeplex.com"
         mc:Ignorable="d"
-        Title="API Test" Height="750" Width="1200" WindowStyle="ThreeDBorderWindow" MinHeight="750" MaxHeight="780" Icon="favicon.ico">
-    <Grid IsManipulationEnabled="True" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto">
+        Title="API Test" Height="750" Width="1200" WindowStyle="ThreeDBorderWindow" MinHeight="750" MaxHeight="780" Icon="favicon.ico" ResizeMode="CanMinimize">
+    <Grid IsManipulationEnabled="True" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" Margin="0,0,0,0">
         <Grid.RowDefinitions>
             <RowDefinition Height="25"></RowDefinition>
             <RowDefinition Height="235"></RowDefinition>
@@ -34,18 +35,19 @@
             <Label  Content="字段和参数(一行一组)"/>
             <TextBox x:Name="addField" Height="100" Text="name=REST API测试客户端&#xD;&#xA;author=New Future&#xA;version=1.0" VerticalAlignment="Top"  AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
         </StackPanel>
-        <StackPanel Grid.Row="2" Grid.Column="0" CanVerticallyScroll="True" Margin="0,0,0,4" Background="#FFAEB0AB">
+        <StackPanel Grid.Row="2" Grid.Column="0" CanVerticallyScroll="True" Margin="0,0,0,-8" Background="#FFAEB0AB">
             <Label x:Name="sendlabel" Content="发送的数据" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="#FF0AFF15"/>
-            <TextBox x:Name="SendText"  IsReadOnly="True" Height="420" BorderBrush="#FF0AFF15" HorizontalScrollBarVisibility="Auto" Grid.IsSharedSizeScope="True" ScrollViewer.CanContentScroll="True" VerticalScrollBarVisibility="Auto" Margin="0,0,0,2" Background="{x:Null}" TextWrapping="WrapWithOverflow"/>
+            <TextBox x:Name="SendText"  IsReadOnly="True" Height="431" BorderBrush="#FF0AFF15" HorizontalScrollBarVisibility="Auto" Grid.IsSharedSizeScope="True" ScrollViewer.CanContentScroll="True" VerticalScrollBarVisibility="Auto" Margin="0,0,0,2" Background="{x:Null}" TextWrapping="WrapWithOverflow"/>
         </StackPanel>
         <StackPanel     Grid.Row="1" Grid.Column="1" CanVerticallyScroll="True" Background="#FFFFFCBE">
             <Label x:Name="headlabel" Content="收到数据头" HorizontalAlignment="Left" VerticalAlignment="Top" Background="{x:Null}" Foreground="#FFFA8364"/>
             <TextBox x:Name="HeadText" IsReadOnly="True" BorderBrush="#FFF50A0A" Foreground="#FF0070F7" Height="210" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" FontWeight="Bold" ScrollViewer.CanContentScroll="True" Background="{x:Null}" TextWrapping="WrapWithOverflow"/>
         </StackPanel>
-        <StackPanel     Grid.Row="2" Grid.Column="1" CanVerticallyScroll="True" CanHorizontallyScroll="True" Grid.IsSharedSizeScope="True" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" Margin="0,0,0,-6" Background="#FFFFFCBE">
+        <StackPanel     Grid.Row="2" Grid.Column="1" CanVerticallyScroll="True" CanHorizontallyScroll="True" Grid.IsSharedSizeScope="True" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" Margin="0,0,0,-8" Background="#FFFFFCBE">
             <Label x:Name="bodylabel" Content="收到数据内容" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="#FFFA8364"/>
-            <TextBox x:Name="BodyText" TextWrapping="WrapWithOverflow" IsReadOnly="True" BorderBrush="#FFF50A0A" Foreground="#FF0070F7" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" FontWeight="Bold" Grid.IsSharedSizeScope="True" ScrollViewer.CanContentScroll="True" Height="420" Margin="0,0,0,2" Background="{x:Null}"/>
+            <TextBox x:Name="BodyText" TextWrapping="WrapWithOverflow" IsReadOnly="True" BorderBrush="#FFF50A0A" Foreground="#FF0070F7" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" FontWeight="Bold" Grid.IsSharedSizeScope="True" ScrollViewer.CanContentScroll="True" Height="428" Margin="0" Background="{x:Null}"/>
         </StackPanel>
-
+        <Image x:Name="image" Grid.Row="1" Width="{Binding Width, ElementName=BodyText}" Margin="0,28,0,2" OpacityMask="#FFDCC661" Panel.ZIndex="1" Grid.RowSpan="2" Grid.ColumnSpan="2" Stretch="None" MouseDown="image_MouseDown"/>
+        
     </Grid>
 </Window>
