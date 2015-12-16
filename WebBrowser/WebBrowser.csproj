@@ -51,7 +51,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Browserpoint_128px_1191850_easyicon.net.ico</ApplicationIcon>
+    <ApplicationIcon>icon\Browserpoint_128px_1191850_easyicon.net.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="HtmlAgilityPack, Version=1.4.9.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
@@ -162,9 +162,6 @@
   <ItemGroup>
     <Resource Include="icon\Browserpoint_128px_1191850_easyicon.net.ico" />
     <Resource Include="icon\Browser_script_128px_1191943_easyicon.net.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Browserpoint_128px_1191850_easyicon.net.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,19 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using Http;
-using HtmlAgilityPack;
 using System.IO;
+using System.Text;
+using System.Windows;
+using System.Windows.Input;
+using HtmlAgilityPack;
+using Http;
 
 namespace WebBrowser
 {
@@ -25,7 +16,7 @@ namespace WebBrowser
         public textView(string Url)
         {
             InitializeComponent();
-
+            URL_textBox.Text = Url;
             update(Url);
         }
 
@@ -63,42 +54,28 @@ namespace WebBrowser
                         link.Value = Download.GetAbsUri(link.Value, uri);
                     }
                 }
-
-                //下载CSS
-                var css = html.DocumentNode.SelectNodes("//link[@href]");
-                if (css != null)
-                {
-                    foreach (var item in css)
-                    {
-                        var link = item.Attributes["href"];
-                        link.Value = Download.GetAbsUri(link.Value, uri);
-                    }
-                }
-
-                //超链接换成绝对链接
-                var links = html.DocumentNode.SelectNodes("//a[@href]");
-                if (links != null)
-                {
-                    foreach (var item in links)
-                    {
-                        if (item.Attributes["target"] != null)
-                            item.Attributes["target"].Value = "_self";
-                        var link = item.Attributes["href"];
-                        link.Value = Download.GetAbsUri(link.Value, uri);
-                    }
-                }
-                using (MemoryStream ms = new MemoryStream())
-                {
-                    html.Save(ms);
-                    this.richTextBox.Text = UTF8Encoding.Default.GetString(ms.ToArray());
-                }
+                MemoryStream ms = new MemoryStream();
+                Encoding e = html.DeclaredEncoding ?? (Encoding.Default);
+                html.Save(ms);
+                this.richTextBox.Text = e.GetString(ms.ToArray());
 
             }
-            if (response != null)
+
+        }
+
+        /// <summary>
+        /// 回车更新
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void URL_textBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
             {
-                var html = response.Body;
-                this.richTextBox.Text = html;
+                string url = URL_textBox.Text.Trim();
+                update(url);
             }
+
         }
     }
 }

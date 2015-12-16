@@ -4,11 +4,11 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WebBrowser"
-        xmlns:Controls="clr-namespace:Microsoft.Windows.Controls;assembly=Html.RichHtmlTextBlock"
+        xmlns:Controls="clr-namespace:Microsoft.Windows.Controls;assembly=HtmltoXaml"
         xmlns:uc="clr-namespace:Microsoft.Windows.Controls;assembly=HtmltoXaml"
         mc:Ignorable="d"      
 
-        Title="textView" Height="300" Width="300">
+        Title="SimlpleView" Height="600" Width="800" ScrollViewer.HorizontalScrollBarVisibility="Auto" Icon="icon/Browserpoint_128px_1191850_easyicon.net.ico">
     <Window.Resources>
         <uc:HtmlFormatter x:Key="HtmlFormatter" />
         <LinearGradientBrush
@@ -24,12 +24,11 @@
         </Style>
     </Window.Resources>
     <Grid>
+        <TextBox x:Name="URL_textBox" FontWeight="bold" TextWrapping="NoWrap" KeyDown="URL_textBox_KeyDown" Margin="0,0,0,244"/>
         <uc:RichTextBox
             x:Name="richTextBox"
             Style="{StaticResource HtmlTextBlockStyle}"
             TextFormatter="{StaticResource HtmlFormatter}"
-            Margin="0 6 6 6"
-            Grid.Row="8" Grid.Column="1" >
-        </uc:RichTextBox>
+            Margin="0,25,0,6" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" />
     </Grid>
 </Window>

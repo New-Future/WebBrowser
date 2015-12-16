@@ -27,7 +27,7 @@ namespace WebBrowser
         public MainWindow()
         {
             InitializeComponent();
-            FilePath = Directory.CreateDirectory("download").FullName + "/";
+            FilePath = Directory.CreateDirectory("download").FullName + "\\";
             var hp = new HtmlPage(FilePath);
             this.frame.Navigate(hp);
             this.SizeChanged += MainWindow_SizeChanged;

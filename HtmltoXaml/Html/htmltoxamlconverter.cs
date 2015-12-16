@@ -20,7 +20,8 @@ namespace Html
 
     using System.Windows; // DependencyProperty
     using System.Windows.Documents; // TextElement
-  
+    using Html;
+
     /// <summary>
     /// HtmlToXamlConverter is a static class that takes an HTML string
     /// and converts it into XAML
@@ -244,13 +245,13 @@ namespace Html
                         break;
 
                     case "img":
-                        // TODO: Add image processing
                         AddImage(xamlParentElement, htmlElement, inheritedProperties, stylesheet, sourceContext);
                         break;
 
                     case "table":
                         // hand off to table parsing function which will perform special table syntax checks
-                        AddTable(xamlParentElement, htmlElement, inheritedProperties, stylesheet, sourceContext);
+                        // DISABLE TABLES (it seems like they don't work most of the time)
+                        // AddTable(xamlParentElement, htmlElement, inheritedProperties, stylesheet, sourceContext);
                         break;
 
                     case "tbody":
@@ -528,7 +529,9 @@ namespace Html
                 switch (htmlElementName)
                 {
                     case "a":
-                        AddHyperlink(xamlParentElement, htmlElement, inheritedProperties, stylesheet, sourceContext);
+                        // DISABLE LINKS
+                        // AddHyperlink(xamlParentElement, htmlElement, inheritedProperties, stylesheet, sourceContext);
+                        AddSpanOrRun(xamlParentElement, htmlElement, inheritedProperties, stylesheet, sourceContext);
                         break;
                     case "img":
                         AddImage(xamlParentElement, htmlElement, inheritedProperties, stylesheet, sourceContext);
@@ -565,7 +568,7 @@ namespace Html
                 if (htmlNode is XmlElement)
                 {
                     string htmlChildName = ((XmlElement)htmlNode).LocalName.ToLower();
-                    if (HtmlSchema.IsInlineElement(htmlChildName) || HtmlSchema.IsBlockElement(htmlChildName) || 
+                    if (HtmlSchema.IsInlineElement(htmlChildName) || HtmlSchema.IsBlockElement(htmlChildName) ||
                         htmlChildName == "img" || htmlChildName == "br" || htmlChildName == "hr")
                     {
                         elementHasChildren = true;
@@ -607,7 +610,7 @@ namespace Html
             }
 
             // Replace No-Breaks by spaces (160 is a code of &nbsp; entity in html)
-            //  This is a work around since WPF/XAML does not support &nbsp.
+            //  This is a work around the bug in Avalon which does not render nbsp.
             textData = textData.Replace((char)160, ' ');
 
             if (textData.Length > 0)
@@ -644,9 +647,6 @@ namespace Html
                 {
                     xamlElement.SetAttribute(HtmlToXamlConverter.Xaml_Hyperlink_TargetName, hrefParts[1].Trim());
                 }
-                xamlElement.SetAttribute("Cursor", "Hand");
-                xamlElement.SetAttribute("ToolTip", href);
-                //xamlElement.SetAttribute("Click", "HtmlPage.LinkClick");
 
                 // Recurse into element subtree
                 for (XmlNode htmlChildNode = htmlElement.FirstChild; htmlChildNode != null; htmlChildNode = htmlChildNode.NextSibling)
@@ -717,9 +717,36 @@ namespace Html
         //
         // .............................................................
 
+        private static List<string> BlockContainers = new List<string> { Xaml_FlowDocument, Xaml_TableCell, Xaml_ListItem, Xaml_Section };
+
         private static void AddImage(XmlElement xamlParentElement, XmlElement htmlElement, Hashtable inheritedProperties, CssStylesheet stylesheet, List<XmlElement> sourceContext)
         {
-            //  Implement images
+            // Create currentProperties as a compilation of local and inheritedProperties, set localProperties
+            Hashtable localProperties;
+            Hashtable currentProperties = GetElementProperties(htmlElement, inheritedProperties, out localProperties, stylesheet, sourceContext);
+
+            // Create a XAML element corresponding to this html element
+            XmlElement xamlElement = xamlParentElement.OwnerDocument.CreateElement(/*prefix:*/null, /*localName:*/HtmlToXamlConverter.Xaml_Image, _xamlNamespace);
+            ApplyLocalProperties(xamlElement, localProperties, /*isBlock:*/false);
+
+            if (!xamlElement.HasAttribute(Xaml_MaxHeight) && !xamlElement.HasAttribute(Xaml_MaxWidth))
+            {
+                xamlElement.SetAttribute("Stretch", BlockContainers.Contains(xamlParentElement.Name) ? "UniformToFill" : "None");
+            }
+            if(htmlElement.HasAttribute("src"))
+            {
+                xamlElement.SetAttribute("Source", htmlElement.GetAttribute("src"));
+                xamlElement.SetAttribute("ToolTip", htmlElement.GetAttribute("src"));
+            }
+
+            
+            XmlElement container = xamlParentElement.OwnerDocument.CreateElement(
+                null,
+                BlockContainers.Contains(xamlParentElement.Name) ? "BlockUIContainer" : "InlineUIContainer",
+                _xamlNamespace);
+            container.AppendChild(xamlElement);
+
+            xamlParentElement.AppendChild(container);
         }
 
         // .............................................................
@@ -845,7 +872,7 @@ namespace Html
             {
                 AddListItem(xamlListElement, (XmlElement)htmlChildNode, inheritedProperties, stylesheet, sourceContext);
                 lastProcessedListItemElement = (XmlElement)htmlChildNode;
-                htmlChildNode = htmlChildNode.NextSibling;               
+                htmlChildNode = htmlChildNode.NextSibling;
                 htmlChildNodeName = htmlChildNode == null ? null : htmlChildNode.LocalName.ToLower();
             }
 
@@ -1245,13 +1272,13 @@ namespace Html
 
                     // Advance
                     htmlChildNode = htmlChildNode.NextSibling;
-                    
+
                 }
                 else if (htmlChildNode.LocalName.ToLower() == "td")
                 {
                     // Tr element is not present. We create one and add td elements to it
                     XmlElement xamlTableRowElement = xamlTableBodyElement.OwnerDocument.CreateElement(null, Xaml_TableRow, _xamlNamespace);
-                    
+
                     // This is incorrect formatting and the column starts should not be set in this case
                     Debug.Assert(columnStarts == null);
 
@@ -1261,7 +1288,7 @@ namespace Html
                         xamlTableBodyElement.AppendChild(xamlTableRowElement);
                     }
                 }
-                else 
+                else
                 {
                     // Not a tr or td  element. Ignore it.
                     // TODO: consider better recovery here
@@ -1337,7 +1364,7 @@ namespace Html
                         Debug.Assert(columnIndex + columnSpan < columnStarts.Count);
 
                         xamlTableCellElement.SetAttribute(Xaml_TableCell_ColumnSpan, columnSpan.ToString());
-                        
+
                         // Apply row span
                         for (int spannedColumnIndex = columnIndex; spannedColumnIndex < columnIndex + columnSpan; spannedColumnIndex++)
                         {
@@ -1525,7 +1552,7 @@ namespace Html
             ClearActiveRowSpans(activeRowSpans);
 
             XmlNode htmlChildNode = htmlTbodyElement.FirstChild;
-          
+
             // Analyze tr elements
             while (htmlChildNode != null && columnWidthsAvailable)
             {
@@ -1798,7 +1825,7 @@ namespace Html
             return spannedColumnIndex;
         }
 
-        
+
         /// <summary>
         /// Used for clearing activeRowSpans array in the beginning/end of each tbody
         /// </summary>
@@ -1845,7 +1872,7 @@ namespace Html
         {
             double columnWidth;
             double nextColumnStart;
-            
+
             // Parameter validation
             Debug.Assert(htmlTDElement.LocalName.ToLower() == "td" || htmlTDElement.LocalName.ToLower() == "th");
             Debug.Assert(columnStart >= 0);
@@ -1921,7 +1948,7 @@ namespace Html
             columnSpan = 0;
             subColumnWidth = 0;
 
-            while (columnSpanningValue <  columnWidth && columnSpanningIndex < columnStarts.Count - 1)
+            while (columnSpanningValue < columnWidth && columnSpanningIndex < columnStarts.Count - 1)
             {
                 subColumnWidth = (double)columnStarts[columnSpanningIndex + 1] - (double)columnStarts[columnSpanningIndex];
                 Debug.Assert(subColumnWidth > 0);
@@ -2003,6 +2030,7 @@ namespace Html
                 {
                     case "font-family":
                         //  Convert from font-family value list into xaml FontFamily value
+                        // DISABLE FONT-FAMILY
                         xamlElement.SetAttribute(Xaml_FontFamily, (string)propertyEnumerator.Value);
                         break;
                     case "font-style":
@@ -2012,11 +2040,18 @@ namespace Html
                         //  Convert from font-variant into xaml property
                         break;
                     case "font-weight":
-                        xamlElement.SetAttribute(Xaml_FontWeight, GetFontWeight(propertyEnumerator.Value));
+                        xamlElement.SetAttribute(Xaml_FontWeight, (string)propertyEnumerator.Value);
                         break;
                     case "font-size":
                         //  Convert from css size into FontSize
-                        xamlElement.SetAttribute(Xaml_FontSize, GetSize(propertyEnumerator.Value));
+                        /* DISABLE FONT-SIZE
+                        double length = 0;
+                        if (!TryGetLengthValue((string)propertyEnumerator.Value, out length))
+                        {
+                            TryGetLengthValue(Xaml_FontSize_Medium, out length);
+                        }
+                        xamlElement.SetAttribute(Xaml_FontSize, length.ToString());
+                         */
                         break;
                     case "color":
                         SetPropertyValue(xamlElement, TextElement.ForegroundProperty, (string)propertyEnumerator.Value);
@@ -2029,7 +2064,8 @@ namespace Html
                         {
                             if ((string)propertyEnumerator.Value == "true")
                             {
-                                xamlElement.SetAttribute(Xaml_TextDecorations, Xaml_TextDecorations_Underline);
+                                // DISABLE UNDERLINES
+                                // xamlElement.SetAttribute(Xaml_TextDecorations, Xaml_TextDecorations_Underline);
                             }
                         }
                         break;
@@ -2049,7 +2085,8 @@ namespace Html
                     case "text-indent":
                         if (isBlock)
                         {
-                            xamlElement.SetAttribute(Xaml_TextIndent,HtmlFromXamlConverter.ParseSize((string)propertyEnumerator.Value));
+                            // DISABLE TEXT-INDENT
+                            // xamlElement.SetAttribute(Xaml_TextIndent, (string)propertyEnumerator.Value);
                         }
                         break;
 
@@ -2061,10 +2098,30 @@ namespace Html
                         break;
 
                     case "width":
-                    case "height":
-                        //  Decide what to do with width and height propeties
+                        if (xamlElement.Name == Xaml_Image)
+                        {
+                            double width = double.PositiveInfinity;
+                            if (TryGetLengthValue((string)propertyEnumerator.Value, out width))
+                            {
+                                xamlElement.SetAttribute(Xaml_MaxWidth, width.ToString());
+                            }
+                        }
                         break;
 
+                    case "height":
+                        if (xamlElement.Name == Xaml_Image)
+                        {
+                            double Height = double.PositiveInfinity;
+                            if (TryGetLengthValue((string)propertyEnumerator.Value, out Height))
+                            {
+                                xamlElement.SetAttribute(Xaml_MaxHeight, Height.ToString());
+                            }
+                        }
+                        break;
+
+                    case "src":
+                        xamlElement.SetAttribute(Xaml_Source, (string)propertyEnumerator.Value);
+                        break;
                     case "margin-top":
                         marginSet = true;
                         marginTop = (string)propertyEnumerator.Value;
@@ -2193,6 +2250,8 @@ namespace Html
                 }
             }
 
+            /*
+            // DISABLE MARGIN, PADDING, BORDERS
             if (isBlock)
             {
                 if (marginSet)
@@ -2216,6 +2275,7 @@ namespace Html
                     ComposeThicknessProperty(xamlElement, Xaml_BorderThickness, borderThicknessLeft, borderThicknessRight, borderThicknessTop, borderThicknessBottom);
                 }
             }
+             */
         }
 
         // Create syntactically optimized four-value Thickness
@@ -2231,29 +2291,34 @@ namespace Html
             //  }
             string thickness;
 
-            // We do not accept negative margins
-            if (left[0] == '0' || left[0] == '-') left = "0";
-            if (right[0] == '0' || right[0] == '-') right = "0";
-            if (top[0] == '0' || top[0] == '-') top = "0";
-            if (bottom[0] == '0' || bottom[0] == '-') bottom = "0";
+            double l, r, t, b;
+            TryGetLengthValue(left, out l);
+            TryGetLengthValue(right, out r);
+            TryGetLengthValue(top, out t);
+            TryGetLengthValue(bottom, out b);
 
-            if (left == right && top == bottom)
+            // We do not accept negative margins
+            l = Math.Max(l, 0);
+            r = Math.Max(r, 0);
+            t = Math.Max(t, 0);
+            b = Math.Max(b, 0);
+
+            if (l == r && t == b)
             {
-                if (left == top)
+                if (l == t)
                 {
-                    thickness = left;
+                    thickness = l.ToString();
                 }
                 else
                 {
-                    thickness = left + "," + top;
+                    thickness = l + "," + t;
                 }
             }
             else
             {
-                thickness = left + "," + top + "," + right + "," + bottom;
+                thickness = l + "," + t + "," + r + "," + b;
             }
 
-            //  Need safer processing for a thickness value
             xamlElement.SetAttribute(propertyName, thickness);
         }
 
@@ -2268,7 +2333,7 @@ namespace Html
                     xamlElement.SetAttribute(property.Name, stringValue);
                 }
             }
-            catch(Exception)
+            catch (Exception)
             {
             }
         }
@@ -2328,6 +2393,8 @@ namespace Html
                     localProperties["text-decoration-underline"] = "true";
                     break;
                 case "font":
+                    /*
+                    // DISABLE FONT ATTRIBUTES
                     string attributeValue = GetAttribute(htmlElement, "face");
                     if (attributeValue != null)
                     {
@@ -2347,7 +2414,8 @@ namespace Html
                         }
                         localProperties["font-size"] = fontSize.ToString();
                     }
-                    attributeValue = GetAttribute(htmlElement, "color");
+                     */
+                    string attributeValue = GetAttribute(htmlElement, "color");
                     if (attributeValue != null)
                     {
                         localProperties["color"] = attributeValue;
@@ -2410,6 +2478,12 @@ namespace Html
                     break;
                 case "ol":
                     localProperties["list-style-type"] = "decimal";
+                    break;
+
+                case "img":
+                    localProperties["src"] = GetAttribute(htmlElement, "src");
+                    localProperties["width"] = GetAttribute(htmlElement, "width");
+                    localProperties["height"] = GetAttribute(htmlElement, "height");
                     break;
 
                 case "table":
@@ -2511,6 +2585,17 @@ namespace Html
                         length = Double.NaN;
                     }
                 }
+                else if (lengthAsString.EndsWith("%"))
+                {
+                    lengthAsString = lengthAsString.Substring(0, lengthAsString.Length - 1);
+                    if (!Double.TryParse(lengthAsString, out length))
+                    {
+                        length = Double.NaN;
+                    }
+                    double medium = 0;
+                    TryGetLengthValue(Xaml_FontSize_Medium, out medium);
+                    length = medium * (length / 100);
+                }
                 else
                 {
                     if (!Double.TryParse(lengthAsString, out length)) // Assuming pixels
@@ -2601,6 +2686,7 @@ namespace Html
         public const string Xaml_LineBreak = "LineBreak";
 
         public const string Xaml_Paragraph = "Paragraph";
+        public const string Xaml_Image = "Image";
 
         public const string Xaml_Margin = "Margin";
         public const string Xaml_Padding = "Padding";
@@ -2621,16 +2707,21 @@ namespace Html
         public const string Xaml_TableCell_RowSpan = "RowSpan";
 
         public const string Xaml_Width = "Width";
+        public const string Xaml_Height = "Height";
+        public const string Xaml_MaxWidth = "MaxWidth";
+        public const string Xaml_MaxHeight = "MaxHeight";
+
         public const string Xaml_Brushes_Black = "Black";
         public const string Xaml_FontFamily = "FontFamily";
 
+        public const string Xaml_Source = "Source";
         public const string Xaml_FontSize = "FontSize";
         public const string Xaml_FontSize_XXLarge = "22pt"; // "XXLarge";
-        public const string Xaml_FontSize_XLarge  = "20pt"; // "XLarge";
-        public const string Xaml_FontSize_Large   = "18pt"; // "Large";
-        public const string Xaml_FontSize_Medium  = "16pt"; // "Medium";
-        public const string Xaml_FontSize_Small   = "12pt"; // "Small";
-        public const string Xaml_FontSize_XSmall  = "10pt"; // "XSmall";
+        public const string Xaml_FontSize_XLarge = "20pt"; // "XLarge";
+        public const string Xaml_FontSize_Large = "18pt"; // "Large";
+        public const string Xaml_FontSize_Medium = "16pt"; // "Medium";
+        public const string Xaml_FontSize_Small = "12pt"; // "Small";
+        public const string Xaml_FontSize_XSmall = "10pt"; // "XSmall";
         public const string Xaml_FontSize_XXSmall = "8pt"; // "XXSmall";
 
         public const string Xaml_FontWeight = "FontWeight";
@@ -2655,54 +2746,7 @@ namespace Html
         #region Private Fields
 
         static string _xamlNamespace = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
-        static string[] font_weight = new string[] { "thin", "extralight", "ultralight", "light", "normal", "regular", "medium", "demibold", "semibold", "bold", "extrabold", "ultrabold", "black", "heavy", "extrablack", "ultrablack" };
+
         #endregion Private Fields
-
-        #region 字段过滤
-        static string GetFontWeight(object s)
-        {
-            string weight =((string)s).ToLower();
-            int w=0;
-            if (!int.TryParse(weight,out w)&& Array.IndexOf<string>(font_weight,weight)<0)
-            {
-                weight = "normal";
-            }
-            //to 映射
-            return weight;
-        }
-
-        //获取大小
-        static string GetSize(object s)
-        {
-            string size = ((string)s).ToLower();
-
-            int startIndex = 0;
-            if (size[0] == '-')//负数
-            {
-                startIndex++;
-            }
-            if (startIndex < size.Length && Char.IsDigit(size[startIndex]))
-            {
-                while (startIndex < size.Length && (Char.IsDigit(size[startIndex]) || size[startIndex] == '.'))
-                {
-                    startIndex++;
-                }
-
-                string number = size.Substring(0, startIndex).Trim();
-
-                string unit = size.Substring(startIndex).Trim();
-                if (unit.Trim().ToLower() == "em")
-                {
-                    //em 转成px（*12）
-                    number = (float.Parse(number) * 12).ToString();
-                    unit = "px";
-                }
-                return number + unit;
-            }
-
-            return "9pt";
-        
-        }
-        #endregion
     }
 }

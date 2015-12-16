@@ -24,13 +24,13 @@
                 <ColumnDefinition Width="30"></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <Button x:Name="Next_button" Content="旧版" Click="TextView" Grid.Column="0"/>
-            <Button Cursor="Hand"  x:Name="Back_button" Content="返回" Click="Back_Click" Grid.Column="1"/>          
+            <Button Cursor="Hand"  x:Name="Back_button" Content="返回" Click="Back_Click" Grid.Column="1"/>
             <TextBox x:Name="URL_textBox" FontWeight="bold" TextWrapping="NoWrap"  Grid.Column="2"/>
             <Button x:Name="GO_button" Content="GO" Click="GO_button_Click" Grid.Column="3"/>
             <Button x:Name="sourceBtn" Content="源码"  Click="sourceBtn_Click" Grid.Column="4"/>
             <Button x:Name="downloadBtn" Content="下载"  Click="downloadBtn_Click" Grid.Column="5"/>
         </Grid>
-        <WebBrowser x:Name="wb" Grid.Row="1" Margin="0" />
+        <WebBrowser x:Name="wb" Grid.Row="1" Margin="0"/>
 
     </Grid>
 </Page>

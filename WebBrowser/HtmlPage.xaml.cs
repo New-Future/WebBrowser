@@ -1,20 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Http;
-using HtmlAgilityPack;
-using System.IO;
 
 namespace WebBrowser
 {
@@ -23,9 +12,6 @@ namespace WebBrowser
     /// </summary>
     public partial class HtmlPage : Page
     {
-        //public double ViewWidth { get; private set; }
-        //public double ViewHeight { get; set; }
-
         string FilePath;
         string SavePath;
         Stack<string> urlList = new Stack<string>();
@@ -57,29 +43,47 @@ namespace WebBrowser
             set { this.wb.Width = value - 2; }
         }
 
-        Response response;
-
         public HtmlPage(string storePath = "")
         {
             InitializeComponent(); ;
-            this.SizeChanged += HtmlPage_SizeChanged;
-            wb.Navigating += Wb_Navigating;
-            wb.ContextMenuOpening += Wb_ContextMenuOpening;
+            this.SizeChanged += HtmlPage_SizeChanged;//窗口大小自适应
+            wb.Navigating += Wb_Navigating;//导航拦截
+            URL_textBox.KeyDown += URL_textBox_KeyDown;//回车键
             FilePath = storePath;
-            Url = "http://www.nankai.edu.cn/";
-
+            Url = "https://www.zhihu.com/";
         }
 
-        private void Wb_ContextMenuOpening(object sender, ContextMenuEventArgs e)
+        /// <summary>
+        /// 新的链接
+        /// </summary>
+        /// <param name="url"></param>
+        private void navigate(string url, bool noCache = false)
         {
-            //e.
-            //throw new NotImplementedException();
+            this.Url = url;
+            SavePath = Download.GetFileNameFromUrl(Url, FilePath);
+            if (noCache || SavePath == null || !File.Exists(SavePath))
+            {
+                download = new Download(url, FilePath);
+            }
+            if (File.Exists(SavePath))
+            {
+                var f = File.OpenText(SavePath);
+                wb.NavigateToString(f.ReadToEnd());
+                f.Close();
+            }
         }
 
-        private void HtmlPage_SizeChanged(object sender, SizeChangedEventArgs e)
+        /// <summary>
+        /// 回车键
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void URL_textBox_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
-            ViewHeight = e.NewSize.Height;
-            ViewWeight = e.NewSize.Width;
+            if (e.Key == System.Windows.Input.Key.Enter)
+            {
+                GO_button_Click(null, null);
+            }
         }
 
         /// <summary>
@@ -101,7 +105,6 @@ namespace WebBrowser
                     urlList.Push(e.Uri.AbsolutePath);
                 }
             }
-
         }
 
         /// <summary>
@@ -115,23 +118,7 @@ namespace WebBrowser
             urlList.Push(Url);
         }
 
-        /// <summary>
-        /// 新的链接
-        /// </summary>
-        /// <param name="url"></param>
-        private void navigate(string url, bool noCache = false)
-        {
-            this.Url = url;
-            SavePath = Download.GetFileNameFromUrl(Url, FilePath);
-            if (noCache || SavePath == null || !File.Exists(SavePath))
-            {
-                download = new Download(url, FilePath);
-                response = download.response;
-            }
-            var f = File.OpenText(SavePath);
-            wb.NavigateToString(f.ReadToEnd());
-            f.Close();
-        }
+
 
 
         /// <summary>
@@ -178,15 +165,10 @@ namespace WebBrowser
         /// <param name="e"></param>
         private void Back_Click(object sender, RoutedEventArgs e)
         {
-            //urlList.Count
             if (urlList.Count > 0)
             {
                 navigate(urlList.Pop());
             }
-            //if (this.wb.CanGoBack)
-            //{
-            //    this.wb.GoBack();
-            //}
         }
 
         /// <summary>
@@ -202,10 +184,26 @@ namespace WebBrowser
             }
         }
 
+        /// <summary>
+        /// 查看
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void TextView(object sender, RoutedEventArgs e)
         {
             textView t = new textView(Url);
             t.Show();
+        }
+
+        /// <summary>
+        /// 大小自动调整
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void HtmlPage_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            ViewHeight = e.NewSize.Height;
+            ViewWeight = e.NewSize.Width;
         }
     }
 }

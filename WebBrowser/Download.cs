@@ -99,6 +99,15 @@ namespace WebBrowser
                             url = GetAbsUri(url, uri);
                             item.Attributes["src"].Value = GetFileNameFromUrl(url);
                             fileList.Add(url);
+                            if (item.Attributes.Contains("title"))
+                            {
+                                item.Attributes["title"].Value = url;
+                            }
+                            else
+                            {
+                                item.SetAttributeValue("title", url);
+                            }
+
                         }
                     }
                 }
