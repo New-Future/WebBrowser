@@ -27,27 +27,21 @@ namespace WebBrowser
         public MainWindow()
         {
             InitializeComponent();
-            FilePath= Directory.CreateDirectory("download").FullName+"/";
-            Download();
+            FilePath = Directory.CreateDirectory("download").FullName + "/";
+            var hp = new HtmlPage(FilePath);
+            this.frame.Navigate(hp);
+            this.SizeChanged += MainWindow_SizeChanged;
         }
 
-        private void GO_button_Click(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// 窗口自适应
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MainWindow_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            string url = URL_textBox.Text.TrimStart();
-            HTTP h = new HTTP();
-            var response = h.Request(url, "GET");
-            if (response!=null)
-            {
-            this.Body_textBlock.Text = response.Body;
-            this.Head_textBlock.Text = response.Headers;
-            }
-        }
-
-        void Download(string url= "https://ss0.bdstatic.com/5aV1bjqh_Q23odCf/static/superman/img/logo/logo_white.png")
-        {
-            string file = FilePath + url.Replace(':','_').Replace("/", "-");
-            HTTP h = new HTTP();
-            h.Download(url, file);
+            frame.Height = e.NewSize.Height - 40;
+            frame.Width = e.NewSize.Width - 20;
         }
     }
 }

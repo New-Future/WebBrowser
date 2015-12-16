@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WebBrowser"
         mc:Ignorable="d"
-        Title="source" Height="600" Width="1000" ResizeMode="NoResize" Background="#FFCFE0C1" WindowStartupLocation="CenterScreen">
+        Title="source" Height="600" Width="1000" ResizeMode="NoResize" Background="#FFCFE0" WindowStartupLocation="CenterScreen" Icon="icon/Browser_script_128px_1191943_easyicon.net.ico">
     <Grid>
         <TextBox x:Name="Head_textBlock" HorizontalAlignment="Left" TextWrapping="Wrap" Text="head" Width="998" Height="150" VerticalAlignment="Top" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" IsReadOnly="True" ToolTip="响应头部数据" Foreground="#FF666464" Cursor="Arrow" Background="{x:Null}"/>
         <TextBox x:Name="Body_textBlock" HorizontalAlignment="Left" Margin="0,150,0,0" TextWrapping="Wrap" Text="body" Width="998" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" IsReadOnly="True" ToolTip="主体内容数据" Cursor="Arrow" Background="{x:Null}"/>
