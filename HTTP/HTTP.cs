@@ -1,15 +1,16 @@
-﻿using System;
+﻿/** 
+API 测试
+* Author NewFuture
+*/
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Net;
-using System.IO;
-using System.Net.Sockets;
 using System.Diagnostics;
+using System.IO;
 using System.Net.Security;
+using System.Net.Sockets;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
 
 namespace Http
 {
@@ -65,15 +66,6 @@ namespace Http
 
         #endregion
 
-        ///// <summary>
-        ///// 编码格式
-        ///// </summary>
-        //private Encoding _encode = Encoding.UTF8;
-        //public Encoding Encode
-        //{
-        //    get { return _encode; }
-        //    set { _encode = value; }
-        //}
 
         /// <summary>
         /// 错误信息
@@ -140,7 +132,7 @@ namespace Http
                             stream = ssl;
                         }
                         else
-                        {
+                      {
                             return null;
                         }
                     }
@@ -285,10 +277,15 @@ namespace Http
         {
             //请求方式和请求路径
             StringBuilder headersBuilder = new StringBuilder(this.Method + " " + path + " HTTP/" + this.vesion + HTTP.CRLF);
+            //header头数据
             foreach (var item in this.Header)
             {
-                //头数据
                 headersBuilder.Append(item.Key + HTTP.KEY_SEPARATOR + item.Value + HTTP.CRLF);
+            }
+            //cookie
+            if (!string.IsNullOrWhiteSpace(Cookie))
+            {
+                headersBuilder.Append("Cookie" + Http.HTTP.KEY_SEPARATOR + Cookie + HTTP.CRLF);
             }
             headersBuilder.Append("Connection: close" + HTTP.END);
             return headersBuilder.ToString();

@@ -7,6 +7,7 @@ HTPP响应处理类
  string Body数据
  string Headers响应头字符串
  byte[] Data 响应数据字节流
+ * author NewFuture
 */
 
 using System;

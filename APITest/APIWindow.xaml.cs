@@ -1,14 +1,17 @@
-﻿using System;
+﻿/** 
+HTTP响应处理类
+* Author NewFuture
+*/
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
-using System.Threading;
 using Http;
 using WpfAnimatedGif;
-using System.Linq;
 namespace APITest
 {
     /// <summary>
@@ -19,14 +22,11 @@ namespace APITest
         /// <summary>
         /// 响应数据
         /// </summary>
-
         private void SetResponse(Response value)
         {
             if (value == null) return;
             HeadText.Text = value.Headers;
             string type = value.Header.ContainsKey("CONTENT-TYPE") ? value.Header["CONTENT-TYPE"].TrimStart() : "";
-            image.Visibility = Visibility.Hidden;
-
             if (type.StartsWith("image/"))
             {
                 BodyText.Text = "[图片:" + type.Substring(6) + "]";
@@ -41,9 +41,7 @@ namespace APITest
                            bimg.StreamSource = new MemoryStream(value.Data);
                            bimg.EndInit();
                            bimg.Freeze();
-                           //image.Source = bimg;
                            ImageBehavior.SetAnimatedSource(image, bimg);
-                           //image.Sour
                            image.Visibility = Visibility.Visible;
                            SetTitle("[图片]" + URL);
                        }));
@@ -54,6 +52,7 @@ namespace APITest
             else
             {
                 BodyText.Text = value.Body;
+                image.Visibility = Visibility.Hidden;
                 image.Source = null;
             }
         }
@@ -69,7 +68,7 @@ namespace APITest
                 var url = URLBox.Text.Trim();
                 if (!url.StartsWith("http"))
                 {
-                    url = "https://" + url;
+                    url = "http://" + url;
                 }
                 return url;
             }
