@@ -68,7 +68,12 @@ namespace WebBrowser
             if (File.Exists(SavePath))
             {
                 var f = File.OpenText(SavePath);
-                wb.NavigateToString(f.ReadToEnd());
+                var html = f.ReadToEnd();
+                if (!string.IsNullOrWhiteSpace(html))
+                {
+                    wb.NavigateToString(html);
+                }
+
                 f.Close();
             }
         }

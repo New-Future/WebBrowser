@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:APITest"
         xmlns:gif="http://wpfanimatedgif.codeplex.com"
         mc:Ignorable="d"
-        Title="API Test" Height="750" Width="1200" WindowStyle="ThreeDBorderWindow" MinHeight="750" MaxHeight="780" Icon="favicon.ico" ResizeMode="CanMinimize">
+        Title="REST API Test——by New Future" Height="750" Width="1200" WindowStyle="ThreeDBorderWindow" MinHeight="750" MaxHeight="780" Icon="favicon.ico" ResizeMode="CanMinimize">
     <Grid IsManipulationEnabled="True" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" Margin="0,0,0,0">
         <Grid.RowDefinitions>
             <RowDefinition Height="25"></RowDefinition>

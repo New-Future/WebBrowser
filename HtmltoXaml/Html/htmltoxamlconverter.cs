@@ -224,10 +224,10 @@ namespace Html
                     case "h6":
                     case "nsrtitle":
                     case "textarea":
-                    case "dd": // ???
-                    case "dl": // ???
-                    case "dt": // ???
-                    case "tt": // ???
+                    case "dd": // 
+                    case "dl": // 
+                    case "dt": // 
+                    case "tt": // 
                         AddParagraph(xamlParentElement, htmlElement, inheritedProperties, stylesheet, sourceContext);
                         break;
 
